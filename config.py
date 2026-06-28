@@ -26,7 +26,7 @@ class Config:
 
     # ==================== LLM服务配置 ====================
     # 默认指向校内昇腾算力节点（团队教育厅在研项目「全栈国产化教育算力平台」提供）的
-    # OpenAI 兼容推理端点；实际地址通过环境变量 LLM_API_URL 注入，请勿在代码中硬编码密钥。
+    # 通用 Chat Completions 兼容推理端点（接口格式兼容，实际接入国产大模型服务）；地址通过环境变量 LLM_API_URL 注入，请勿在代码中硬编码密钥。
     LLM_API_URL = os.environ.get('LLM_API_URL') or 'http://ascend-llm.local:1234/v1/chat/completions'
     LLM_API_URL_BACKUP = os.environ.get('LLM_API_URL_BACKUP') or None
     LLM_API_KEY = os.environ.get('LLM_API_KEY') or 'lm-studio'

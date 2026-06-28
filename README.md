@@ -22,20 +22,24 @@ Python 实验课学生基础差异大，商业大模型被当作"答案生成器
 
 ## 技术栈
 
-Python 3 · Flask · SQLAlchemy · SQLite · 原生 HTML+JS · 行业标准（OpenAI 兼容）推理接口
+Python 3 · Flask · SQLAlchemy · SQLite · 原生 HTML+JS · 通用 Chat Completions 兼容推理接口（接口格式兼容，实际接入国产大模型服务）
 
 ## 快速开始
 
 ```bash
-pip install flask flask-sqlalchemy
-# 配置推理端点（二选一）
-export LLM_API_URL="https://<国产云端大模型 API>/v1/chat/completions"
+pip install -r requirements.txt
+# 配置推理端点（参考 .env.example，仅需一个云端 API Key）
+export LLM_API_URL="https://<国产云端大模型API>/v1/chat/completions"
 export LLM_API_KEY="<你的 API Key>"
-python migrate_and_seed.py   # 初始化数据库与演示数据
+python migrate_and_seed.py   # 初始化数据库：演示教师 + 12 次实验（不含真实学生数据）
 python app.py                # 启动，默认 http://127.0.0.1:5000
 ```
 
+演示教师账号 `teacher / teacher123`（**仅演示默认账号，正式部署首次登录后必须修改密码**）。
+
 **软硬件门槛低**：无需自建本地 AI 算力——在教师端"模型配置"页填入一个国产云端大模型 API Key 即可接入运行，普通云服务器即可部署，兄弟院校可零门槛复用；如需"数据不出校"，再切换本地 / 混合云模式（对接昇腾等私有化推理端点）。
+
+> **安全提示**：学生代码运行采用"黑名单 + 子进程 + 超时"沙箱，适合课程演示；公网部署时建议以容器 / 低权限用户 / 资源隔离方式运行学生代码。
 
 ## 目录结构
 
