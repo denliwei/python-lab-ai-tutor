@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Python程序设计{% endblock %} - 课程实验系统</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e40af;
+            --accent: #f59e0b;
+            --accent-light: #fbbf24;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white; padding: 0 2rem; height: 60px; display: flex;
+            align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,.15); position: sticky; top: 0; z-index: 100;
+        }
+        .navbar-brand {
+            display: flex; align-items: center; gap: .75rem; font-size: 1.1rem; font-weight: 600;
+            text-decoration: none; color: white; flex-shrink: 0;
+        }
+        .navbar-brand .brand-icon {
+            width: 36px; height: 36px; background: rgba(255,255,255,.2);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .navbar-nav { display: flex; align-items: center; gap: .25rem; }
+        .navbar-nav > a, .nav-dropdown > .nav-trigger {
+            color: rgba(255,255,255,.85); text-decoration: none; font-size: .85rem;
+            transition: all .2s; display: flex; align-items: center; gap: .35rem;
+            padding: .4rem .7rem; border-radius: 6px; cursor: pointer; white-space: nowrap;
+        }
+        .navbar-nav > a:hover, .nav-dropdown:hover > .nav-trigger {
+            color: white; background: rgba(255,255,255,.12);
+        }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-menu {
+            display: none; position: absolute; top: 100%; right: 0;
+            padding-top: .5rem;
+            z-index: 200;
+        }
+        .nav-dropdown-menu-inner {
+            background: white; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.18);
+            min-width: 170px; padding: .4rem 0;
+            border: 1px solid rgba(0,0,0,.08);
+        }
+        .nav-dropdown:hover .nav-dropdown-menu { display: block; }
+        .nav-dropdown-menu a {
+            display: flex; align-items: center; gap: .5rem; padding: .55rem 1rem;
+            color: var(--text); text-decoration: none; font-size: .85rem; transition: background .15s;
+        }
+        .nav-dropdown-menu a:hover { background: #f0f4f8; }
+        .nav-dropdown-menu a i { width: 18px; text-align: center; color: var(--text-secondary); font-size: .8rem; }
+        .nav-dropdown-menu .menu-divider { height: 1px; background: var(--border); margin: .3rem 0; }
+        .navbar-user {
+            display: flex; align-items: center; gap: .5rem;
+            background: rgba(255,255,255,.15); padding: .4rem .8rem; border-radius: 20px;
+            font-size: .82rem; white-space: nowrap;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+        .card {
+            background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+            padding: 1.5rem; margin-bottom: 1rem; border: 1px solid var(--border);
+            transition: box-shadow .2s;
+        }
+        .card:hover { box-shadow: var(--shadow-lg); }
+        .card-header {
+            font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;
+            padding-bottom: .75rem; border-bottom: 2px solid var(--border);
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .btn {
+            display: inline-flex; align-items: center; gap: .4rem; padding: .5rem 1.2rem;
+            border: none; border-radius: 8px; font-size: .9rem; cursor: pointer;
+            transition: all .2s; text-decoration: none; font-weight: 500;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { opacity: .9; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-outline {
+            background: transparent; border: 1.5px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-sm { padding: .3rem .8rem; font-size: .8rem; }
+        .btn-lg { padding: .7rem 2rem; font-size: 1rem; }
+        .badge {
+            display: inline-block; padding: .2rem .6rem; border-radius: 20px;
+            font-size: .75rem; font-weight: 600;
+        }
+        .badge-primary { background: #dbeafe; color: var(--primary); }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #cffafe; color: #155e75; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-weight: 500; margin-bottom: .3rem; font-size: .9rem; }
+        .form-control {
+            width: 100%; padding: .5rem .75rem; border: 1.5px solid var(--border);
+            border-radius: 8px; font-size: .9rem; transition: border-color .2s;
+            background: white; font-family: inherit;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,86,219,.1); }
+        textarea.form-control { min-height: 100px; resize: vertical; }
+        select.form-control { appearance: auto; }
+        .alert {
+            padding: .75rem 1rem; border-radius: 8px; margin-bottom: 1rem;
+            display: flex; align-items: center; gap: .5rem; font-size: .9rem;
+        }
+        .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .alert-info { background: #cffafe; color: #155e75; border: 1px solid #a5f3fc; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .text-center { text-align: center; }
+        .text-secondary { color: var(--text-secondary); }
+        .mt-1 { margin-top: .5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mb-1 { margin-bottom: .5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: .6rem .8rem; text-align: left; border-bottom: 1px solid var(--border); font-size: .9rem; }
+        th { background: #f8fafc; font-weight: 600; color: var(--text-secondary); font-size: .8rem; text-transform: uppercase; }
+        tr:hover { background: #f8fafc; }
+        .progress-bar {
+            width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%; border-radius: 4px; transition: width .5s ease;
+        }
+        .tutor-panel {
+            position: fixed; right: 0; top: 60px; width: 360px; height: calc(100vh - 60px);
+            background: white; border-left: 1px solid var(--border);
+            box-shadow: -2px 0 10px rgba(0,0,0,.05); display: flex; flex-direction: column;
+            z-index: 90; transform: translateX(100%); transition: transform .3s ease;
+        }
+        .tutor-panel.active { transform: translateX(0); }
+        .tutor-header {
+            padding: 1rem; background: linear-gradient(135deg, #1e7a3a, #22c55e);
+            color: white; display: flex; align-items: center; gap: .75rem;
+        }
+        .tutor-avatar {
+            width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.6);
+            overflow: hidden; flex-shrink: 0;
+        }
+        .tutor-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .tutor-messages {
+            flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: .75rem;
+        }
+        /* 聊天消息行 */
+        .chat-row { display: flex; gap: .5rem; align-items: flex-start; }
+        .chat-row.student { flex-direction: row-reverse; }
+        .chat-row .chat-avatar {
+            width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0; margin-top: 2px;
+        }
+        .chat-row .chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .chat-msg {
+            max-width: 80%; padding: .6rem .9rem; border-radius: 12px;
+            font-size: .85rem; line-height: 1.5; word-wrap: break-word;
+        }
+        .chat-msg.student {
+            background: var(--primary); color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-msg.tutor {
+            background: #f0fdf4; color: var(--text); border: 1px solid #bbf7d0;
+            border-bottom-left-radius: 4px;
+        }
+        /* 小林同学思考动画 */
+        .chat-row.thinking .chat-avatar img {
+            animation: avatarPulse 1.5s ease-in-out infinite;
+        }
+        .thinking-indicator {
+            display: flex; align-items: center; gap: .4rem; padding: .6rem .9rem;
+            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; border-bottom-left-radius: 4px;
+        }
+        .thinking-indicator .thinking-avatar-mini {
+            width: 20px; height: 20px; border-radius: 50%; overflow: hidden;
+            animation: avatarPulse 1.5s ease-in-out infinite;
+        }
+        .thinking-indicator .thinking-avatar-mini img { width: 100%; height: 100%; object-fit: cover; }
+        .thinking-dots { display: flex; gap: 4px; align-items: center; }
+        .thinking-dots span {
+            width: 7px; height: 7px; border-radius: 50%; background: #22c55e;
+            animation: dotBounce 1.4s ease-in-out infinite;
+        }
+        .thinking-dots span:nth-child(2) { animation-delay: .2s; }
+        .thinking-dots span:nth-child(3) { animation-delay: .4s; }
+        .thinking-text { font-size: .78rem; color: #16a34a; font-style: italic; }
+        @keyframes avatarPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: .8; }
+        }
+        @keyframes dotBounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: .4; }
+            40% { transform: translateY(-6px); opacity: 1; }
+        }
+        .tutor-input {
+            padding: .75rem; border-top: 1px solid var(--border);
+            display: flex; gap: .5rem;
+        }
+        .tutor-input input {
+            flex: 1; padding: .5rem .75rem; border: 1.5px solid var(--border);
+            border-radius: 20px; font-size: .85rem; outline: none;
+        }
+        .tutor-input input:focus { border-color: #22c55e; }
+        .tutor-input button {
+            width: 36px; height: 36px; border: none; border-radius: 50%;
+            background: #22c55e; color: white; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .tutor-toggle {
+            position: fixed; right: 1.5rem; bottom: 1.5rem; width: 56px; height: 56px;
+            border-radius: 50%; background: linear-gradient(135deg, #1e7a3a, #22c55e);
+            color: white; border: none; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(34,197,94,.4); z-index: 95;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform .2s, box-shadow .3s; overflow: hidden; padding: 0;
+        }
+        .tutor-toggle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .tutor-toggle:hover { transform: scale(1.1); }
+        /* 悬浮按钮思考动画 */
+        .tutor-toggle.thinking {
+            animation: togglePulse 2s ease-in-out infinite;
+        }
+        @keyframes togglePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(34,197,94,.4), 0 0 0 0 rgba(34,197,94,.5); }
+            50% { transform: scale(1.06); box-shadow: 0 4px 20px rgba(34,197,94,.6), 0 0 0 10px rgba(34,197,94,0); }
+        }
+        /* 头部思考状态 */
+        .tutor-header.thinking .tutor-avatar img {
+            animation: avatarPulse 1.5s ease-in-out infinite;
+        }
+        .tutor-header .status-dot {
+            display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+            background: #86efac; margin-right: 4px; vertical-align: middle;
+        }
+        .tutor-header.thinking .status-dot {
+            animation: dotBounce 1.4s ease-in-out infinite;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .tutor-panel { width: 100%; }
+            .container { padding: 1rem; }
+        }
+        /* Code editor styling */
+        .code-editor {
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+            font-size: .85rem; line-height: 1.6; tab-size: 4;
+            background: #1e293b; color: #e2e8f0; padding: 1rem;
+            border-radius: 8px; min-height: 200px; resize: vertical;
+            border: none; width: 100%;
+        }
+        .code-output {
+            background: #0f172a; color: #a5f3fc; padding: .75rem 1rem;
+            border-radius: 8px; font-family: monospace; font-size: .85rem;
+            white-space: pre-wrap; max-height: 200px; overflow-y: auto;
+        }
+        /* Phase stepper */
+        .phase-stepper {
+            display: flex; align-items: center; justify-content: center;
+            gap: .25rem; padding: 1rem 0; margin-bottom: 1.5rem;
+        }
+        .phase-step {
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .phase-dot {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .75rem; font-weight: 700; border: 2px solid var(--border);
+            color: var(--text-secondary); background: white; transition: all .3s;
+        }
+        .phase-dot.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .phase-dot.done { background: var(--success); color: white; border-color: var(--success); }
+        .phase-label { font-size: .75rem; color: var(--text-secondary); }
+        .phase-label.active { color: var(--primary); font-weight: 600; }
+        .phase-line { width: 40px; height: 2px; background: var(--border); }
+        .phase-line.done { background: var(--success); }
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn .4s ease forwards; }
+        .hidden { display: none !important; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <div class="brand-icon"><i class="fas fa-brain"></i></div>
+            <span>Python程序设计 · 实验系统</span>
+        </a>
+        <div class="navbar-nav">
+            {% if session.get('user_id') %}
+                {% if session.get('role') == 'teacher' %}
+                    <a href="{{ url_for('teacher_dashboard') }}"><i class="fas fa-home"></i> 首页</a>
+
+                    <div class="nav-dropdown">
+                        <div class="nav-trigger"><i class="fas fa-book"></i> 教学 <i class="fas fa-chevron-down" style="font-size:.6rem;opacity:.6"></i></div>
+                        <div class="nav-dropdown-menu"><div class="nav-dropdown-menu-inner">
+                            <a href="{{ url_for('teacher_dashboard') }}"><i class="fas fa-flask"></i> 课堂实验</a>
+                            <a href="{{ url_for('teacher_homeworks') }}"><i class="fas fa-book-open"></i> 课后作业</a>
+                            <a href="{{ url_for('teacher_exams') }}"><i class="fas fa-file-alt"></i> 期末考试</a>
+                        </div></div>
+                    </div>
+
+                    <div class="nav-dropdown">
+                        <div class="nav-trigger"><i class="fas fa-user-graduate"></i> 学情 <i class="fas fa-chevron-down" style="font-size:.6rem;opacity:.6"></i></div>
+                        <div class="nav-dropdown-menu"><div class="nav-dropdown-menu-inner">
+                            <a href="{{ url_for('teacher_students') }}"><i class="fas fa-users"></i> 学生管理</a>
+                            <a href="{{ url_for('teacher_aigc') }}"><i class="fas fa-search"></i> AIGC检测</a>
+                            <a href="{{ url_for('teacher_class_analytics') }}"><i class="fas fa-chart-pie"></i> 班级分析</a>
+                            <a href="{{ url_for('teacher_grade_archive') }}"><i class="fas fa-archive" style="color:var(--info)"></i> 历史成绩</a>
+                            <div class="menu-divider"></div>
+                            <a href="{{ url_for('teacher_early_warning') }}"><i class="fas fa-exclamation-triangle" style="color:var(--warning)"></i> 学情预警</a>
+                            <a href="{{ url_for('teacher_classroom_monitor') }}"><i class="fas fa-tv" style="color:var(--success)"></i> 课堂监控</a>
+                        </div></div>
+                    </div>
+
+                    <div class="nav-dropdown">
+                        <div class="nav-trigger"><i class="fas fa-cogs"></i> 系统 <i class="fas fa-chevron-down" style="font-size:.6rem;opacity:.6"></i></div>
+                        <div class="nav-dropdown-menu"><div class="nav-dropdown-menu-inner">
+                            <a href="{{ url_for('teacher_system_monitor') }}"><i class="fas fa-server"></i> 系统监控</a>
+                            <a href="{{ url_for('teacher_llm_config') }}"><i class="fas fa-cloud"></i> 算力配置</a>
+                        </div></div>
+                    </div>
+
+                    <a href="{{ url_for('create_experiment') }}" style="display:none"></a>
+                {% else %}
+                    <a href="{{ url_for('student_dashboard') }}"><i class="fas fa-flask"></i> 实验</a>
+                    <a href="{{ url_for('student_homeworks') }}"><i class="fas fa-book-open"></i> 作业</a>
+                    <a href="{{ url_for('student_exams') }}"><i class="fas fa-file-alt"></i> 期末考试</a>
+                    <a href="{{ url_for('student_profile') }}"><i class="fas fa-user-circle"></i> 我的画像</a>
+                {% endif %}
+                <div class="navbar-user">
+                    <i class="fas fa-user"></i>
+                    {{ session.get('name', '用户') }}
+                </div>
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> 退出</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    {% block extra_js %}{% endblock %}
+
+    {# ══════ 教师全局实时预警系统（所有页面生效） ══════ #}
+    {% if session.get('role') == 'teacher' %}
+    <style>
+        /* 预警 Toast 容器 */
+        #alert-toast-container {
+            position: fixed; top: 70px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: .5rem;
+            max-height: calc(100vh - 100px); overflow-y: auto; pointer-events: none;
+        }
+        .alert-toast {
+            pointer-events: auto;
+            min-width: 340px; max-width: 420px; padding: .85rem 1rem;
+            border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,.18);
+            display: flex; align-items: flex-start; gap: .7rem;
+            cursor: pointer; transition: all .4s ease;
+            animation: toastSlideIn .4s ease forwards;
+            border-left: 4px solid;
+        }
+        .alert-toast.hiding { animation: toastSlideOut .3s ease forwards; }
+        .alert-toast.level-red    { background: #fef2f2; border-color: #ef4444; }
+        .alert-toast.level-orange { background: #fffbeb; border-color: #f59e0b; }
+        .alert-toast.level-yellow { background: #fefce8; border-color: #eab308; }
+        .alert-toast-icon {
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 1rem;
+        }
+        .level-red    .alert-toast-icon { background: #fee2e2; color: #dc2626; }
+        .level-orange .alert-toast-icon { background: #fef3c7; color: #d97706; }
+        .level-yellow .alert-toast-icon { background: #fef9c3; color: #ca8a04; }
+        .alert-toast-body { flex: 1; min-width: 0; }
+        .alert-toast-title { font-weight: 700; font-size: .88rem; margin-bottom: .15rem; }
+        .alert-toast-msg { font-size: .82rem; color: #64748b; line-height: 1.4; }
+        .alert-toast-close {
+            flex-shrink: 0; width: 24px; height: 24px; border: none; background: none;
+            cursor: pointer; font-size: .9rem; color: #94a3b8; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .alert-toast-close:hover { background: rgba(0,0,0,.08); color: #334155; }
+        @keyframes toastSlideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toastSlideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to   { opacity: 0; transform: translateX(100px); }
+        }
+        /* 导航栏预警角标 */
+        .nav-alert-badge {
+            position: absolute; top: -4px; right: -6px;
+            min-width: 18px; height: 18px; line-height: 18px;
+            background: #ef4444; color: white; font-size: .65rem; font-weight: 700;
+            border-radius: 9px; text-align: center; padding: 0 4px;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.15); box-shadow: 0 0 8px rgba(239,68,68,.5); }
+        }
+    </style>
+
+    <div id="alert-toast-container"></div>
+
+    <script>
+    (function() {
+        const POLL_INTERVAL = 20000;   // 20秒轮询
+        const TOAST_DURATION = 12000;  // Toast显示12秒
+        const LEVEL_PRIORITY = { red: 0, orange: 1, yellow: 2 };
+        const SS_KEY = '_warn_seen';   // sessionStorage key
+
+        // ── seenAlerts：跨页面持久化（sessionStorage），标签页关闭自动清除 ──
+        // 结构: { "studentId_type": "level", ... }
+        let seenAlerts = {};
+        try {
+            const saved = sessionStorage.getItem(SS_KEY);
+            if (saved) seenAlerts = JSON.parse(saved);
+        } catch(e) {}
+
+        function saveSeen() {
+            try { sessionStorage.setItem(SS_KEY, JSON.stringify(seenAlerts)); } catch(e) {}
+        }
+
+        let audioCtx = null;
+        let lastAlertCount = 0;
+
+        // ── 音效（Web Audio API，无需外部文件）──
+        function playAlertSound(level) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (level === 'red') {
+                    // 紧急：双音急促
+                    osc.frequency.value = 880;
+                    gain.gain.value = 0.3;
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+                    setTimeout(() => {
+                        try {
+                            const o2 = audioCtx.createOscillator();
+                            const g2 = audioCtx.createGain();
+                            o2.connect(g2); g2.connect(audioCtx.destination);
+                            o2.frequency.value = 1047; g2.gain.value = 0.3;
+                            o2.start(); o2.stop(audioCtx.currentTime + 0.15);
+                        } catch(e) {}
+                    }, 180);
+                } else if (level === 'orange') {
+                    // 警告：中音
+                    osc.frequency.value = 660;
+                    gain.gain.value = 0.2;
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+                } else {
+                    // 提示：轻柔
+                    osc.frequency.value = 523;
+                    gain.gain.value = 0.12;
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+                }
+            } catch(e) {}
+        }
+
+        // ── Toast 弹出 ──
+        function showToast(alert) {
+            const container = document.getElementById('alert-toast-container');
+            const icons = { red: 'fa-bell', orange: 'fa-exclamation-triangle', yellow: 'fa-info-circle' };
+            const titles = { red: '🚨 紧急预警', orange: '⚠️ 预警提醒', yellow: '💡 学情提示' };
+
+            const toast = document.createElement('div');
+            toast.className = `alert-toast level-${alert.level}`;
+            toast.innerHTML = `
+                <div class="alert-toast-icon"><i class="fas ${icons[alert.level] || 'fa-bell'}"></i></div>
+                <div class="alert-toast-body">
+                    <div class="alert-toast-title">${titles[alert.level] || '预警'}</div>
+                    <div class="alert-toast-msg">
+                        <strong>${alert.student?.name || ''}</strong>
+                        ${alert.student?.class_name ? '(' + alert.student.class_name + ')' : ''}<br>
+                        ${alert.message || ''}
+                    </div>
+                </div>
+                <button class="alert-toast-close" onclick="event.stopPropagation();this.parentElement.classList.add('hiding');setTimeout(()=>this.parentElement.remove(),300)">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            toast.addEventListener('click', () => {
+                window.location.href = '{{ url_for("teacher_early_warning") }}';
+            });
+            container.appendChild(toast);
+
+            // 自动消失
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.classList.add('hiding');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, TOAST_DURATION);
+        }
+
+        // ── 导航栏角标 ──
+        function updateNavBadge(count) {
+            // 找到学情下拉的触发器
+            let trigger = document.querySelector('.nav-trigger');
+            document.querySelectorAll('.nav-trigger').forEach(t => {
+                if (t.textContent.includes('学情')) trigger = t;
+            });
+            if (!trigger) return;
+            trigger.style.position = 'relative';
+
+            let badge = trigger.querySelector('.nav-alert-badge');
+            if (count > 0) {
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'nav-alert-badge';
+                    trigger.appendChild(badge);
+                }
+                badge.textContent = count > 99 ? '99+' : count;
+            } else if (badge) {
+                badge.remove();
+            }
+        }
+
+        // ── 轮询预警 ──
+        function pollWarnings() {
+            fetch('/api/teacher/live_warnings')
+                .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+                .then(data => {
+                    if (!data.success) return;
+                    const alerts = data.alerts || [];
+
+                    // 收集本轮活跃的 key，用于清理已消失的预警
+                    const activeKeys = new Set();
+
+                    let newCount = 0;
+                    let highestLevel = 'yellow';
+
+                    alerts.forEach(a => {
+                        // key 不含 level：同一学生同一类型共用一个 key
+                        const key = `${a.student?.id}_${a.type}`;
+                        activeKeys.add(key);
+
+                        const prevLevel = seenAlerts[key];  // 上次弹过的级别
+
+                        if (prevLevel === undefined) {
+                            // ★ 全新预警 → 弹 toast
+                            seenAlerts[key] = a.level;
+                            showToast(a);
+                            newCount++;
+                        } else if (LEVEL_PRIORITY[a.level] < LEVEL_PRIORITY[prevLevel]) {
+                            // ★ 级别升级（如 yellow→orange）→ 再弹一次
+                            seenAlerts[key] = a.level;
+                            showToast(a);
+                            newCount++;
+                        }
+                        // 否则：同级别或降级 → 不弹
+
+                        if (LEVEL_PRIORITY[a.level] < LEVEL_PRIORITY[highestLevel]) {
+                            highestLevel = a.level;
+                        }
+                    });
+
+                    // 清理已消失的预警（被消除或条件不再满足）
+                    for (const key of Object.keys(seenAlerts)) {
+                        if (!activeKeys.has(key)) delete seenAlerts[key];
+                    }
+
+                    // 持久化到 sessionStorage
+                    saveSeen();
+
+                    // 有新预警时播放音效（只响一次，取最高级别）
+                    if (newCount > 0) {
+                        playAlertSound(highestLevel);
+                    }
+
+                    // 更新角标（显示当前总预警数）
+                    updateNavBadge(alerts.length);
+                    lastAlertCount = alerts.length;
+                })
+                .catch(() => {});
+        }
+
+        // ── 启动 ──
+        // 首次延迟3秒（等页面加载完），之后每20秒轮询
+        setTimeout(pollWarnings, 3000);
+        setInterval(pollWarnings, POLL_INTERVAL);
+
+        // 用户首次点击页面时激活AudioContext（浏览器策略要求用户交互后才能播放声音）
+        document.addEventListener('click', function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            document.removeEventListener('click', initAudio);
+        }, { once: true });
+
+        // 全局事件：其他页面（如学情预警中心）一键消除后，立即清空toast和角标
+        window.addEventListener('warnings-all-dismissed', () => {
+            seenAlerts = {};
+            saveSeen();
+            const container = document.getElementById('alert-toast-container');
+            if (container) container.innerHTML = '';
+            updateNavBadge(0);
+        });
+    })();
+    </script>
+    {% endif %}
+</body>
+</html>
